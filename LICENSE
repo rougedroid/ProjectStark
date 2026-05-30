@@ -1,0 +1,118 @@
+# Dual License Agreement
+
+## Project: Stark
+
+**Effective Date:** May 22, 2026
+
+---
+
+## DUAL LICENSING MODEL
+
+This project is made available under a dual licensing model to support both open-source collaboration and commercial use with appropriate compensation to the author.
+
+---
+
+## 1. NON-COMMERCIAL LICENSE
+
+### 1.1 Grant of Rights
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, modify, and distribute the Software for non-commercial purposes only, subject to the following conditions:
+
+### 1.2 Non-Commercial Definition
+"Non-commercial use" means any use that is not intended to generate or does not generate direct or indirect commercial advantage or monetary compensation. This includes but is not limited to:
+- Academic research and education
+- Personal projects and learning
+- Open-source contributions (non-monetized)
+- Internal organizational use that does not generate revenue from the Software
+
+### 1.3 Conditions for Non-Commercial Use
+- The above copyright notice and this license notice shall be included in all copies or substantial portions of the Software
+- Attribution must be given to the original author(s)
+- Any modifications must be clearly marked as such
+- Modified versions must retain this dual license agreement
+
+### 1.4 Permitted Activities
+- Use the Software for research, education, and personal projects
+- Modify the Software for your own non-commercial purposes
+- Share the Software with others under these same non-commercial terms
+
+---
+
+## 2. COMMERCIAL LICENSE
+
+### 2.1 Commercial Use Restriction
+Any use of this Software for commercial purposes, including but not limited to:
+- Generating revenue directly or indirectly from the Software
+- Using the Software in a commercial product or service
+- Using the Software for business operations that generate profit
+- Providing the Software as a service or hosted solution
+- Any monetary compensation derived from use of the Software
+
+**REQUIRES** a separate commercial license agreement with the copyright holder.
+
+### 2.2 Commercial License Request
+To obtain a commercial license, please contact the project maintainer. Commercial licensing terms will be negotiated individually based on your use case.
+
+---
+
+## 3. INTELLECTUAL PROPERTY PROTECTION
+
+### 3.1 Code Protection
+All source code, algorithms, and implementations in this Software are protected by copyright law. You may not:
+- Reverse engineer, decompile, or disassemble the Software
+- Attempt to derive or recreate the underlying technology
+- Remove or obscure any proprietary notices
+
+### 3.2 Idea Protection
+All original ideas, concepts, algorithms, and methodologies embodied in this Software are the intellectual property of the copyright holder and are protected accordingly. Unauthorized use or implementation of these concepts is prohibited.
+
+### 3.3 Patent Rights
+The copyright holder reserves all patent rights related to the Software and its methodologies. No license to any patents is granted except as explicitly stated herein.
+
+---
+
+## 4. LIABILITY DISCLAIMER
+
+### 4.1 NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+### 4.2 LIMITATION OF LIABILITY
+IN NO EVENT SHALL THE COPYRIGHT HOLDER, AUTHORS, OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. THIS INCLUDES BUT IS NOT LIMITED TO:
+
+- Direct or indirect damages
+- Data loss or corruption
+- Business interruption or loss of profits
+- Personal injury or death
+- Any other consequential, incidental, special, or punitive damages
+
+### 4.3 Severity Exception
+Even if the copyright holder has been advised of the possibility of such damages.
+
+---
+
+## 5. TERMINATION
+
+This license is effective until terminated. Your rights under this license will terminate automatically without notice if you fail to comply with any of its terms and conditions. Upon termination, you must cease all use and destroy all copies of the Software in your possession.
+
+---
+
+## 6. GOVERNING LAW
+
+This license agreement shall be governed by and construed in accordance with applicable law, without regard to its conflict of law provisions.
+
+---
+
+## 7. ENTIRE AGREEMENT
+
+This license constitutes the entire agreement between you and the copyright holder regarding the Software and supersedes all prior agreements and understandings.
+
+---
+
+## 8. CONTACT FOR LICENSING
+
+For inquiries regarding commercial licensing or other licensing arrangements, please contact the project maintainer.
+
+---
+
+**Copyright © 2026. All rights reserved.**
+
+The copyright holder reserves the right to modify, supplement, or update this license agreement at any time. Changes will be effective upon posting to the repository.

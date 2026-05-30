@@ -1,0 +1,10 @@
+('/r/DefinedAs', {'sentence': '[[space]] is the [[empty vacuum between stars and planets]]', 'relation_label': 'defined as', 'source': 'CN'})
+
+Properties:
+
+{
+'sentence': '[[space]] is the [[empty vacuum between stars and planets]]', 
+'relation_label': 'defined as', 
+'source': 'CN'
+}
+
