@@ -1,10 +1,10 @@
 import pickle
 import river
-
+import neo4j
 
 URI = "neo4j://localhost:7687"
 USERNAME = "neo4j"
-PASSWORD = "testpass"
+PASSWORD = "password"
 driver = neo4j.GraphDatabase.driver(
     URI,
     auth=(USERNAME, PASSWORD)
