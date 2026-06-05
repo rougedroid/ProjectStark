@@ -29,7 +29,7 @@ def record_audio():
 
 def initial_llm_processing(audio_data):
     response = ollama.generate(
-        model='gemma4b-fixed',
+        model='gemma3n:e4b',
         prompt=prompt_instruction,
         images=[audio_data],  # Multimodal binary buffers are passed through the image/media parameter list
         format='',         # Forces Ollama to constrain vocabulary to valid JSON matrices
