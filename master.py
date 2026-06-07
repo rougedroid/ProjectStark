@@ -8,9 +8,10 @@ import scipy.io.wavfile as wav
 import io
 import utilities as utils
 import listener
+import whisper
 import json
 import contextwords as cw
-
+import answer
 
 
 def agent_mode():
@@ -61,7 +62,7 @@ def determine_mode(intent):
     elif intent in ["learn-text"]:
         return "learn_mode_text"
     else:
-        return "unknown_mode"
+        return f"unknown_mode:{intent}"
 
     
 
@@ -73,6 +74,7 @@ def main():
     run_flag = True
     while run_flag:
         query = listener.listen()
+        
         print("Received query:", query)
         intent = json.loads(query).get('intent')
         mode = determine_mode(intent)
@@ -83,8 +85,9 @@ def main():
         elif mode == "feedback-mode":
             # process feedback
             pass
-        elif mode == "question-mode":
-            answer_retuened = answer.answer(json.loads(query))
+        elif mode == "question_general_mode":
+            results = answer.answer(json.loads(query))
+            print(results)
 
     pass
     # Add a use mode feature where it sees if we want it in agent mode or in learn mode and depending on that, the processing changes. 

@@ -3,11 +3,12 @@ import neo4j
 import pickle
 import ollama
 import sounddevice as sd
+import whisper
 import numpy as np
 import scipy.io.wavfile as wav
 import io
 import utilities as utils
-
+from pydantic import BaseModel
 driver = utils.driver
 
 FS = 16000
@@ -16,6 +17,13 @@ prompt_instruction = """You are an audio processing assistant. Your task is to a
 
 """
 
+
+class AudioAnalysis(BaseModel):
+    summary: str
+    detected_language: str
+    action_items: list[str]
+    sentiment: str
+
 # Make it output a JSON. Input the predefined keywords into Modelfile and make new model.
 
 def record_audio():
@@ -23,22 +31,30 @@ def record_audio():
     audio = sd.rec(int(DURATION * FS), samplerate=FS, channels=1)
     sd.wait()
     print("Recording complete.")
-    wav_buffer = io.BytesIO()
-    wav.write(wav_buffer, FS, audio)
-    return wav_buffer.getvalue()
+
+    return audio.flatten()
 
 def initial_llm_processing(audio_data):
-    response = ollama.generate(
-        model='gemma3n:e4b',
-        prompt=prompt_instruction,
-        images=[audio_data],  # Multimodal binary buffers are passed through the image/media parameter list
-        format='',         # Forces Ollama to constrain vocabulary to valid JSON matrices
+    audio_model = whisper.load_model("base")
+    query = audio_model.transcribe(audio_data)
+    prompt = query["text"]
+
+    
+    response = ollama.chat(
+        model="gemma3n:e4b",
+        messages=[
+              {
+                "role": "user",
+                "content": f"Convert the following data into a strict JSON object. DO NOT DO ANY FURTHER PROCESSING. ONLY OUTPUT THE JSON OBJECT DIRECTLY, NO OTHER FLUFF. Get the required info from the following text: {prompt}"
+            }
+        ],
         options={
-            'temperature': 0.0  # Zero temperature locks down deterministic instruction matching
-        }
+            "temperature": 0.0  # Zero temperature locks down deterministic instruction matching
+        },
+        format=AudioAnalysis.model_json_schema(),
     )
     print("LLM Raw Response:", response)
-    return response['choices'][0]['message']['content']
+    return response['message']['content']
 
 def listen():
     audio_data = record_audio()

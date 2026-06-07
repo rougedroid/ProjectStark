@@ -23,35 +23,71 @@ def fetch_seed_node(keyword, phrase):
     #print("Embedding:", phrase_embedding)
     with utils.driver.session(database="cskg") as session:
         query = """
-            // Step 1: Locate entry anchors
+            // Step 1: Locate nearest entry anchors using Vector Search
             MATCH (keywordAnchor:Node)
             SEARCH keywordAnchor IN (VECTOR INDEX cskg_concept_embeddings FOR $keyword_embedding LIMIT 1)
-            
+
             MATCH (phraseAnchor:Node)
             SEARCH phraseAnchor IN (VECTOR INDEX cskg_concept_embeddings FOR $phrase_embedding LIMIT 1)
-            WHERE keywordAnchor <> phraseAnchor
-            
+
+            // Ensure they aren't the exact same node; if they are, expand the search to find the next nearest neighbor
+            WITH keywordAnchor, phraseAnchor
+            // FIXED: Explicitly passing variables into the subquery scope to eliminate deprecation warning
+            CALL (keywordAnchor, phraseAnchor) {
+                // Branch A: Anchors collide. Fetch alternative 2nd nearest neighbor
+                WITH keywordAnchor, phraseAnchor
+                WHERE keywordAnchor = phraseAnchor
+                MATCH (altPhraseAnchor:Node)
+                SEARCH altPhraseAnchor IN (VECTOR INDEX cskg_concept_embeddings FOR $phrase_embedding LIMIT 2)
+                WHERE altPhraseAnchor <> keywordAnchor
+                RETURN altPhraseAnchor AS finalPhraseAnchor
+                
+                UNION
+                
+                // Branch B: Anchors are distinct. Use original phrase anchor
+                WITH keywordAnchor, phraseAnchor
+                WHERE keywordAnchor <> phraseAnchor
+                RETURN phraseAnchor AS finalPhraseAnchor
+            }
+            WITH keywordAnchor, finalPhraseAnchor AS phraseAnchor
+
             // Step 2: Find the connecting backbone path
             MATCH path = shortestPath((keywordAnchor)-[*..4]-(phraseAnchor))
             WITH keywordAnchor, phraseAnchor, nodes(path) AS pathNodes
-            
+
             // Create a unified pool of all core nodes
-            WITH pathNodes + [keywordAnchor, phraseAnchor] AS coreNodes, pathNodes
+            WITH pathNodes + [keywordAnchor, phraseAnchor] AS coreNodes, pathNodes, [keywordAnchor, phraseAnchor] AS anchors
             UNWIND coreNodes AS coreNode
-            
-            // Step 3: Extract all directional relationships touching these core nodes
-            // We pass pathNodes through the MATCH scope implicitly by carrying it in the WITH
-            MATCH (coreNode)-[r]->(neighbor:Node)
-            
-            // Step 4: Collect everything into a distinct semantic triple format
-            WITH DISTINCT coreNode, r, neighbor, pathNodes
+            WITH DISTINCT coreNode, pathNodes, anchors
+
+            // Step 3 & 4: Extract relationships with conditional filtering via Subquery
+            CALL (coreNode, anchors) {
+                MATCH (coreNode)-[r]->(neighbor:Node)
+                
+                // If it's one of the two anchor nodes, return ALL neighbors
+                WITH coreNode, r, neighbor, anchors
+                WHERE coreNode IN anchors
+                RETURN r, neighbor
+
+                UNION
+
+                // For the rest of the path nodes, return only top 3 by topologyScore
+                MATCH (coreNode)-[r]->(neighbor:Node)
+                WHERE NOT coreNode IN anchors
+                WITH r, neighbor
+                ORDER BY neighbor.topologyScore DESC
+                LIMIT 3
+                RETURN r, neighbor
+            }
+
+            // Step 5: Format and return results
             RETURN 
                 coreNode.name AS source_name,
                 coreNode.topologyScore AS source_topo_score,
                 type(r) AS relationship_type,
                 neighbor.name AS target_name,
                 neighbor.topologyScore AS target_topo_score,
-                (coreNode IN pathNodes AND neighbor IN pathNodes) AS is_backbone_edge   
+                (coreNode IN pathNodes AND neighbor IN pathNodes) AS is_backbone_edge
         """
         result = session.run(query, keyword_embedding=keyword_embedding, phrase_embedding=phrase_embedding)
         out_result = result.data()
@@ -86,23 +122,23 @@ def fetch_seed_node(keyword, phrase):
         else:
             index = unique_relationships.index(triple["relationship"])
             sorted_triples[index].append(triple)
-    
-    for group in sorted_triples:
+    """
+    for i in range(len(sorted_triples)):
+        group = sorted_triples[i]
         group.sort(key=lambda x: max(x["source"]["topo_score"], x["target"]["topo_score"]), reverse=True)
         length = len(group)
-        if group[0]["/r/locatedNear"] or group[0]["/r/relatedTo"]:
-            group = group[:max(1, length//2)]
+        rel_type = group[0]["relationship"]       
+        if ((rel_type=="/r/LocatedNear") or (rel_type == "/r/RelatedTo")):
+            sorted_triples[i] = group[:max(1, length//2)]
+    """     
         
     
-    for group in sorted_triples:
-        for triple in group:
-            print(f"{triple['source']['name']} ({triple['source']['topo_score']}) --[{triple['relationship']}]-> {triple['target']['name']} ({triple['target']['topo_score']}) | Backbone: {triple['is_backbone']}")
 
-
-    output = []
+    output = sorted_triples
+    # Format output a little properly. or just format when passing into llm at last step. 
         
         
-
+    # Now, we will look 
 
     # Using the search to give top one node directly. 
     return output if output else None
@@ -114,9 +150,9 @@ def answer(input_dict):
     if question_type == "question-general":
         # process general question
         # use key-word search for seeding. Then, explore 1 branch laterally upto 5 nodes. Then, explore 2 highest topology scoring neighbours from those 5 nodes. Then, use that information to answer the question.
-        find_seed_node = fetch_seed_node(input_dict.get("keyword"), input_dict.get("phrase"))
-        search_space(find_seed_node, depth=2, breadth=5)
-        pass
+        output_nodes = fetch_seed_node(input_dict.get("keyword"), input_dict.get("phrase"))
+        
+        return output_nodes
     elif question_type == "question-specific":
         # process specific question
         pass
@@ -125,4 +161,4 @@ def answer(input_dict):
         pass
     pass
 
-print(fetch_seed_node("peacock", "describe the properties of a peacock"))
+
