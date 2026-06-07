@@ -28,7 +28,7 @@ class AudioAnalysis(BaseModel):
 
 def record_audio():
     print("Recording...")
-    audio = sd.rec(int(DURATION * FS), samplerate=FS, channels=1)
+    audio = audio = sd.rec(int(DURATION * FS), samplerate=FS, channels=1, dtype="float32")
     sd.wait()
     print("Recording complete.")
 
