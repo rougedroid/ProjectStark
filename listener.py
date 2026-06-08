@@ -9,19 +9,22 @@ import scipy.io.wavfile as wav
 import io
 import utilities as utils
 from pydantic import BaseModel
+#import soundfile as sf
+from kokoro import KPipeline
+
+pipeline = KPipeline(lang_code='b')
+
 driver = utils.driver
 
 FS = 16000
-DURATION = 5 
-prompt_instruction = """You are an audio processing assistant. Your task is to analyze the provided audio data and give appropriate response. 
-
-"""
+DURATION = 8
+prompt_instruction = ""
 
 
 class AudioAnalysis(BaseModel):
-    summary: str
-    detected_language: str
-    action_items: list[str]
+    intent: str
+    keyword: str
+    phrase: list[str]
     sentiment: str
 
 # Make it output a JSON. Input the predefined keywords into Modelfile and make new model.
@@ -41,7 +44,7 @@ def initial_llm_processing(audio_data):
 
     
     response = ollama.chat(
-        model="gemma3n:e4b",
+        model="json-translator",
         messages=[
               {
                 "role": "user",
@@ -64,4 +67,9 @@ def listen():
     return llm_response
 
 
-
+def talk(text):
+    generator = pipeline(text, voice='af_heart', speed=1.0)
+    for graphemes, phonemes, audio in generator:
+    # 3. Play back the audio chunk instantly
+    # 'blocking=True' ensures it finishes speaking the current sentence before moving to the next
+        sd.play(audio, samplerate=SAMPLE_RATE, blocking=True)

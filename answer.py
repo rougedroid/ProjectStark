@@ -4,6 +4,8 @@ import requests
 from neo4j import GraphDatabase
 import utilities as utils
 import json
+import listener
+import ollama
 # Update neo4j graphs to have a score for each relationship type. since they are limited, we can hardcode a specific relation for each kind of search task. 
 
 
@@ -151,8 +153,18 @@ def answer(input_dict):
         # process general question
         # use key-word search for seeding. Then, explore 1 branch laterally upto 5 nodes. Then, explore 2 highest topology scoring neighbours from those 5 nodes. Then, use that information to answer the question.
         output_nodes = fetch_seed_node(input_dict.get("keyword"), input_dict.get("phrase"))
-        
-        return output_nodes
+        response = ollama.chat(
+            model="gemma3n:e4b",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Establish semantic meaning from the data provided below. I do not care about the numbers, you are a natural language agent so speak normally and answer the question using data. Data: {output_nodes} Question: {input_dict.get("phrase")}"
+                }
+            ],
+        )
+        text = response['message']['content']
+        listener.talk(text)
+        return None
     elif question_type == "question-specific":
         # process specific question
         pass
