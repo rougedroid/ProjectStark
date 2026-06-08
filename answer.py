@@ -161,6 +161,7 @@ def answer(input_dict):
                     "content": f"Establish semantic meaning from the data provided below. I do not care about the numbers, you are a natural language agent so speak normally and answer the question using data. Data: {output_nodes} Question: {input_dict.get("phrase")}"
                 }
             ],
+            keep_alive=0
         )
         text = response['message']['content']
         listener.talk(text)

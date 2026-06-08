@@ -64,9 +64,9 @@ def main():
     run_flag = True
     while run_flag:
         query = listener.listen()
-        
+        query = query + "}"
         print("Received query:", query)
-        intent = json.loads(query).get('intent')
+        intent = (json.loads(query)).get('intent')
         mode = determine_mode(intent)
         print(f"Determined mode: {mode}")
         if mode == "command-mode":
